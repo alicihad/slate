@@ -1,152 +1,1162 @@
 
-# loans
-## Get All loans
+```
+# ÜRÜN TANIMLAMA (Create a PRoduct)
+
+Müşterilere açılacak hesaba ait ürünlerin tanımlanması için &#39;Ürün Tanımlama&#39; servisi hazırlanacaktır.
+
+Ürün tanımlama servisi ile hesap ile ilişkilendirilecek ürün detayları alınacaktır. Ürün tanımlama servisi kullanılarak Ürün Ağacı oluşturulabilecektir.
+
+Ürün tanımları ana bir ürün grubuna bağlı olacaktır.
+
+Ürün tanımı için aşağıdaki bilgiler alınacaktır.
+
+- Ürün Kodu
+- Ürünün Bağlı Olduğu Ürün kodu (Gönderilmez ise ana üründür, diğer ürün grupları ile ilişki kurulmaz.)
+- Ürün Adı
+- **Müşteri Tipi-Ledger, Ek No , Yerleşim Yeri, Matrix&#39;i**
+
+Sistemde tanımlı bir ürün kodu gönderilirse işleme izin verilmeyecek &#39;Sistemde tanımlı ürün kodu gönderilemez.&#39; Şeklinde hata mesajı verilmelidir.
+
+| **Code** | **Description** |
+| --- | --- |
+| **01** | Sistemde tanımlı ürün kodu gönderilemez. |
+
+# ÜRÜN LİSTELEME
+
+Tanımlı ürün ve ürün özelliklerinin listelenebilmesi için &#39;Ürün Listeleme&#39; servisi hazırlanacaktır.
+
+Servis girdileri aşağıdaki gibi olmalıdır. Girdilerden hiçbiri zorunlu değildir, değer gönderilirse gönderilen değere göre filtrelenmelidir.
+
+- Ürün Kodu
+- Ürünün Bağlı Olduğu Ürün Kodu
+- Müşteri Tipi
+- Ürün Adı
+
+Servis dönüş değerleri aşağıdaki gibi olmalıdır.
+
+- Ürün Kodu
+- Ürünün Bağlı Olduğu Ürün Kodu
+- Müşteri Tipi
+- Başlangıç Ek No
+- Bitiş Ek no
+- Ürün Adı
+
+# HESAP AÇILIŞ
+
+Müşterilerin bakiyelerinin tutulacağı hesapların açılması için &#39;Hesap Açılış&#39; servisi hazırlanacaktır.
+
+Servis girdileri aşağıdaki gibi olmalıdır.
+
+- Müşteri No
+- Şube No
+- Ürün Kodu(Gönderilen Ürün kodu ürün ağacındaki son ürün olmalıdır.)
+- Hesap Adı
+- Döviz Kodu
+- Kanal
+- Kâr oranı
+- Vade Tarihi
+- Dönüş Hesap No
+- Dönüş Hesap Suffix
+
+Servis dönüş değerleri aşağıdaki gibi olmalıdır.
+
+- IBAN
+
+Gönderilen müşteri no, ürün kodu, döviz kodu ile hesabın ek nosu, hangi defterde takip edileceği bulunacak.
+
+Müşteri numarası ve tanımlardan bulunan ek no ile müşteriye hesap açılışı yapılacaktır. Hesap üzerinde aşağıdaki bilgiler tutulacaktır.
+
+- Account No=Müşteri No
+- Account Suffix
+- BranchId
+- Ledger
+- ProductCode
+- Balance à Eksiye düşebilir olmalıdır.
+- BlockedBalance
+- Döviz Kodu
+- IBAN
+- IsActive
+- IsBlockedAccount
+- MaturityDate
+- SourceAccountNo
+- SourceAccountSuffix
+
+# HESAP KAPATMA
+
+Açılan bir hesabın pasife çekilmesi için &#39;Hesap Kapatma&#39; servisi hazırlanacaktır.
+
+Aşağıdaki bilgiler alınarak hesap kapatılacaktır.(pasife çekilecektir.)
+
+- Account No
+- Account Suffix
+
+àGönderilen AccountNo ve AccountSuffix&#39;e bağlı hesapta bakiye 0&#39;a eşit değil ise hesap kapatılmamalıdır. Bakiyesi 0&#39;a eşit olmayan bir hesap için Hesap Kapatma servisi çağrıldığında &#39;Hesabın kapatılması için bakiye 0 olmalıdır.&#39; Şeklinde hata mesajı verilmelidir.
+
+àGönderilen AccountNo ve AccountSuffix&#39;e bağlı hesapta bloke var ise (IsBlockedAccount=1) hesap kapatılmamalı &#39;Gönderilen hesap blokeli olduğu için hesap kapatılamaz.&#39; Şeklinde uyarı mesajı verilmelidir.
+
+| **Code** | **Description** |
+| --- | --- |
+| **01** | Hesabın kapatılması için hesaptaki bakiye 0 olmalıdır. |
+| **02** | Gönderilen hesap blokeli olduğu için hesap kapatılamaz. |
+
+# HESAP LİSTELEME
+
+Tanımlı hesap ve hesap özelliklerinin listelenebilmesi için &#39;Hesap Listeleme&#39; servisi hazırlanacaktır.
+
+Servis girdileri aşağıdaki gibi olmalıdır. Girdilerde gönderilen alanlara göre filtreleme yapılmalıdır. Herhangi bir değer gönderilmez ise filteleme yapılmadan tüm liste getirilmelidir.
+
+- Account No
+- Account Suffix
+- Product Code
+- Balance (input olarak aralık almalıdır.)
+- Döviz kodu
+- Activity Status (Açık hesapları getir, kapalı hesapları getir, tüm hesapları getir.)
+
+ActivityStatus alanında gönderilen değere göre açık hesaplar, kapalı hesaplar listelenebilmelidir. Değer null gönderilirse tüm hesaplar listelenmelidir.
+
+Servis dönüş değerleri aşağıdaki gibi olmalıdır.
+
+- Account No
+- Account Suffix
+- Account Name
+- Branch Id
+- ProductCode
+- Balance
+- Döviz Kodu
+- IBAN
+- IsActive
+- BlockedBalance
+- IsBlockedAccount
+- IsClosed
+- Hesap Açılış Tarihi
+- Hesap Kapanış Tarihi
+
+# HESAPTAN IBAN GETİRME
+
+Hesap bilgisi ile iban bilgisi getiren &#39;Hesap&#39;tan Iban&#39;a&#39; servisi hazırlanacaktır.
+
+Servis girdileri aşağıdaki gibi olmalıdır.
+
+- Account No
+- Account Suffix
+- BranchId
+
+Servis çıktı olarak &#39;Iban&#39; dönmelidir.
+
+àGönderilen AccountNo ve AccountSuffix ile tanımlı bir hesap numarası yok ise servis &#39;Gönderilen hesap bilgilerine ait Iban bulunamadı.&#39; Bilgisini vermelidir.
+
+| **Code** | **Description** |
+| --- | --- |
+| **01** | Gönderilen hesap bilgilerine ait Iban bulunamadı. |
+
+# HESAP EKSTRESİ
+
+# HESAP HAREKETLERİ
+
+# TEMDİT İŞLEMLERİ
+
+Daha sonra detaylandırılacaktır.
+
+# BLOKE TANIMLAMA
+
+Müşteri hesaplarındaki bakiyenin kullanımının engellenmesi amacıyla bloke koyulacaktır.
+
+Hesaplara koyulacak bloke tanımının yapılabilmesi için &#39;Bloke Tanımlama&#39; servisi hazırlanacaktır. Bloke tanım servisi girdileri aşağıdaki gibi olmalıdır.
+
+- Bloke Kodu
+- Bloke Adı
+- Açıklama
+
+àGönderilen bloke kodu ile kayıtlı bir bloke var ise işleme izin verilmemelidir. &#39;Sistemde kayıtlı bloke kodu ile tanım yapılamaz.&#39; Uyarısı verilir.
+
+| **Code** | **Description** |
+| --- | --- |
+| **01** | Sistemde kayıtlı bloke kodu ile tanım yapılamaz. |
+
+# BLOKE TANIM STATÜ GÜNCELLEME
+
+Bloke tanımlarının statüsünün güncellenmesi için &#39;Bloke Statü Güncelleme&#39; servisi hazırlanacaktır.
+
+Bu servis ile bloke tanımları aktif, pasif edilebilecektir.
+
+Bloke statü güncelleme servisi girdileri aşağıdaki gibi olacaktır.
+
+- Bloke Kodu
+- Status
+
+àGönderilen bloke kodu ile tanımlı bir bloke yok ise &#39;Gönderilen bloke kodu ile tanım bulunamadı.&#39; Şeklinde uyarı mesajı verilmelidir.
+
+| **Code** | **Description** |
+| --- | --- |
+| **01** | Gönderilen bloke kodu ile tanım bulunamadı. |
+
+# BLOKE TANIM LİSTELEME
+
+Sistemde tanımlı blokelerin listelenmesi amacıyla &#39;Bloke Tanım Listeleme&#39; servisi hazırlanacaktır.
+
+Bloke tanım listeleme servisi girdileri aşağıdaki gibi olmalıdır.
+
+- Bloke Kodu
+- Bloke Adı
+- Status
+
+Girdilerde gönderilen alanlara göre filtreleme yapılmalıdır. Herhangi bir değer gönderilmez ise bloke tanımlarının tamamı getirilmelidir.
+
+Servis dönüş değerleri aşağıdaki gibi olmalıdır.
+
+- Bloke Kodu
+- Bloke Adı
+- Açıklama
+- Status
+
+# BLOKE EKLEME
+
+Müşteri hesaplarına bloke eklenmesi amacıyla &#39;Bloke Ekleme&#39; servisi hazırlanacaktır.
+
+Servis girdileri aşağıdaki gibi olacaktır.
+
+- Hesap No
+- Hesap Ek No
+- Bloke Kodu
+- Bloke Tutarı
+- Açıklama
+
+àGönderilen hesap bilgileri ya da bloke kodu sistemde tanımlı değil ise işleme izin verilmemelidir.
+
+&#39;Gönderilen hesap sistemde kayıtlı değil.&#39;, &#39;Gönderilen bloke koduna ait bloke tanımı bulunamadı.&#39; Şeklinde uyarı mesajı verilmelidir.
+
+Hesap ve bloke tanım kontrollerinden sonra bloke _ **aktif** _ durumunda kaydedilmelidir.
+
+Hesap tablosundaki BlockedBalance alanı gönderilen bloke kadar artırılmalıdır. Kullanilabilir bakiye ise eklenen bloke kadar düşürülmelidir.
+
+Servis işlemin sonucunda Bloke Numarası dönmelidir.
+
+| **Code** | **Description** |
+| --- | --- |
+| **01** | Gönderilen hesap sistemde kayıtlı değil. |
+| **02** | Gönderilen bloke koduna ait bloke tanımı bulunamadı. |
+
+Bloke iki farklı tipte eklenebilir.
+
+àTutara Bloke
+
+àHesaba Bloke
+
+## TUTARA BLOKE EKLENMESİ
+
+Servis inputlarındaki &#39;Bloke Tutarı&#39; alanında belirli bir tutar gönderilerek hesabın kullanılabilir bakiyesinin azaltıldığı durumdur.
+
+### ASIL BLOKE
+
+Hesabın &#39;Kullanılabilir Bakiyesi&#39;nin gönderilen bloke tutarından küçük ya da eşit olması durumunda hesaba eklenen blokenin tipi &#39;Asıl Bloke&#39; olmalıdır.
+
+Gönderilen bloke tutarı ilgili hesabın &#39;Kullanılabilir Bakiyesi&#39;ne küçük ya da eşit olması durumunda bloke tipi &#39;Asıl Bloke&#39; olmalıdır.
+
+### REZERV BLOKE
+
+Rezerv bloke; hesabın &#39;Kullanılabilir Bakiyesi&#39;nin gönderilen bloke tutarından büyük olması ve kullanılabilir bakiyenin arttığı durumda hesaba konulması için sisteme eklenen blokedir.
+
+Gönderilen bloke tutarı ilgili hesabın &#39;Kullanılabilir Bakiyesi&#39;nden büyük ise;
+
+  - Kullanılabilir Bakiye kadar asıl bloke eklenir.
+  - &#39;Bloke Tutarı- Eklenen Asıl Bloke Tutarı&#39; kadar rezerv bloke eklenir.
+
+## REZERV BLOKE&#39;NİN ASIL BLOKEYE ÇEVRİLMESİ
+
+Rezerv blokesi bulunan ve kullanılabilir bakiyesi artan hesaplar için rezerv blokeyi asıl bloke tipine çeviren bir servis hazırlanacaktır.
+
+Servis girdileri aşağıdaki gibi olacaktır.
+
+- Bloke Numarası
+- Asıl Blokeye Çevrilecek Tutar
+
+Servis işlem sonucunda gönderilen bloke numarasındaki bloke tipini &#39;Asıl&#39; olacak şekilde güncellemeli. Buna bağlı olarak hesap üzerindeki BlockedBalance artmalı, kullanılabilir bakiye azalmalıdır.
+
+## HESABA BLOKE EKLENMESİ
+
+Servis inputlarındaki &#39;Bloke Tutarı&#39; alanında değer gönderilmediği durumda ilgili hesaba bloke eklenmelidir. İlgili hesap üzerinde IsBlockedAccount alanı &#39;true&#39; olarak güncellenecektir.
+
+# BLOKE KALDIRMA
+
+Müşteri hesabındaki blokenin kaldırılması amacıyla &#39;Bloke Kaldırma&#39; servisi hazırlanacaktır.
+
+Servis girdileri aşağıdaki gibi olmalıdır.
+
+- Bloke Numarası
+- Tamamı Kaldırılsın mı?
+- Kaldırılacak Bloke Tutarı
+
+Gönderilen bloke numarası ile hesap üzerinde tanımlı aktif bir bloke var ise ilgili bloke pasif durumuna çekilir.
+
+à&#39;Tamamı Kaldırılsın mı ?&#39; alanında true gönderilirse kaldırılacak bloke tutarı bloke numarası ile alınacaktır. False gönderilirse kaldırılacak bloke tutarı bilgisi servisten girdi olarak alınacaktır.
+
+à&#39;Kaldırılacak Bloke Tutarında&#39; gönderilen bloke numarasındaki blokeden daha yüksek tutarda bir değer gönderilirse &#39;Kaldırılacak Bloke tutarı bloke numarasındaki tutardan büyük olamaz.&#39; Şeklinde hata mesajı vermelidir.
+
+| **Code** | **Description** |
+| --- | --- |
+| **01** | Kaldırılacak Bloke tutarı bloke numarasındaki tutardan büyük olamaz. |
+
+# BLOKE LİSTELEME
+
+Müşteri hesaplarında tanımlı bloke bilgilerinin listelenmesi için &#39;Bloke Listeleme&#39; servisi hazırlanacaktır.
+
+Servis girdileri aşağıdaki gibi olmalıdır. Girdilerde gönderilen alanlara göre filtreleme yapılmalıdır. Herhangi bir değer gönderilmez ise herhangi bir filteleme yapılmadan tüm liste getirilmelidir.
+
+- Account No
+- Account Suffix
+- BranchId
+- Iban
+
+Servis dönüş değerleri aşağıdaki gibi olmalıdır.
+
+- Account No
+- Account Suffix
+- Bloke Numarası
+- Bloke Kodu
+- Bloke Tutarı
+- Açıklama
+
+# ÇİFT DÖVİZLİ HESAPLAR
+
+Daha sonra detaylandırılacaktır.
+
+# HESAP KISITLAMA
+
+Daha sonra detaylandırılacaktır.
+
+# BAKİYE İZLEME
+
+Müşteri hesaplarındaki bakiyenin listelenebilmesi için &#39;Bakiye İzleme &#39; servisi hazırlanacaktır.
+
+Servis girdileri aşağıdaki gibi olacaktır.
+
+- Account No
+- Account Suffix
+
+Servis dönüş değerleri aşağıdaki gibi olmalıdır.
+
+- Bakiye
+- Bloke Tutarı
+- Döviz Kodu
+
+àGönderilen Account No ve Account Suffix&#39;e ait hesap bulunamaz ise &#39;Gönderilen değerlere ilişkin hesap bulunamadı.&#39; Şeklinde hata mesajı verilmelidir.
+
+| **Code** | **Description** |
+| --- | --- |
+| **01** | Gönderilen değerlere ilişkin hesap bulunamadı. |
+
+# EMTİA
+
+Daha sonra detaylandırılacaktır.
+
+# PARA YATIRMA
+
+Hesabın bakiyesinin artırılması için &#39;Para Yatırma&#39; servisi hazırlanacaktır.
+
+Servis girdileri aşağıdaki gibi olacaktır.
+
+- Hesap Numarası
+- Hesap Ek No
+- Tutar
+- Döviz Kodu
+- İşlem Yapılan Şube
+- Açıklama
+
+Servis dönüş değerleri aşağıdaki gibi olmalıdır.
+
+- İşlemden Önceki Bakiye
+- Bakiye
+- Kullanılabilir Bakiye
+- Blokeli Bakiye
+- Hesap Blokeli mi ?
+
+àGönderilen hesap numarası ve ek no ile kayıt bulunamaz ise işleme izin verilmemelidir. &#39;Gönderilen hesap no ve ek no ile hesap bilgisi bulunmamaktadır.&#39; Şeklinde hata mesajı verilmelidir.
+
+àDöviz kodu alanında gönderilen döviz cinsi, hesabın döviz kodu ile uyumlu değil ise &#39;Gönderilen döviz kodu ile hesap numarası uyumsuz.&#39; Şeklinde hata mesajı verilmelidir.
+
+àPara yatırılmak istenen hesap kapatılmış ise &#39;Kapatılmış hesaplarda işlem yapılamaz.&#39; Şeklinde hata mesajı verilmelidir.
+
+| **Code** | **Description** |
+| --- | --- |
+| **01** | Gönderilen hesap no ve ek no ile hesap bilgisi bulunmamaktadır. |
+| **02** | Gönderilen döviz kodu ile hesap numarası uyumsuz. |
+| **03** | Kapatılmış hesaplarda işlem yapılamaz. |
+
+# PARA ÇEKME
+
+Hesabın bakiyesinin artırılması için &#39;Para Çekme servisi hazırlanacaktır.
+
+Servis girdileri aşağıdaki gibi olmalıdır.
+
+- Hesap Numarası
+- Hesap Ek No
+- Tutar
+- Döviz Kodu
+- İşlem Yapılan Şube
+- Açıklama
+
+Servis dönüş değerleri aşağıdaki gibi olmalıdır.
+
+- İşlemden Önceki Bakiye
+- Bakiye
+- Kullanılabilir Bakiye
+- Blokeli Bakiye
+- Hesap Blokeli mi ?
+
+àGönderilen hesap numarası ve ek no ile kayıt bulunamaz ise işleme izin verilmemelidir. &#39;Gönderilen hesap no ve ek no ile hesap bilgisi bulunmamaktadır.&#39; Şeklinde hata mesajı verilmelidir.
+
+àDöviz kodu alanında gönderilen döviz cinsi, hesabın döviz kodu ile uyumlu değil ise &#39;Gönderilen döviz kodu ile hesap numarası uyumsuz.&#39; Şeklinde hata mesajı verilmelidir.
+
+àPara çekilmek istenen hesap kapatılmış ise &#39;Kapatılmış hesaplarda işlem yapılamaz.&#39; Şeklinde hata mesajı verilmelidir.
+
+àPara çekilmek istenen hesaba bloke eklenmiş ise &#39;Hesap üzerinde bloke olduğu için işlem yapılamaz.&#39; Şeklinde hata mesajı verilmelidir.
+
+àÇekilmek istenen tutar hesabın kullanılabilir bakiyesinden büyük ise &#39;Yeterli bakiyeniz bulunmamaktadır.&#39; Şeklinde hata mesajı verilmelidir.
+
+| **Code** | **Description** |
+| --- | --- |
+| **01** | Gönderilen hesap no ve ek no ile hesap bilgisi bulunmamaktadır. |
+| **02** | Gönderilen döviz kodu ile hesap numarası uyumsuz. |
+| **03** | Kapatılmış hesaplarda işlem yapılamaz. |
+| **04** | Hesap üzerinde bloke olduğu için işlem yapılamaz. |
+| **05** | Yeterli bakiyeniz bulunmamaktadır. |
+
+# VİRMAN
+
+Müşterinin döviz cinsleri aynı hesapları arasında para transferi yapabilmek için &#39;Virman&#39; servisi hazırlanacaktır.
+
+Servis girdileri aşağıdaki gibi olmalıdır.
+
+- Hesap Numarası
+- Kaynak Ek Numarası
+- Hedef Ek Numarası
+- Tutar
+- İşlem Tarihi
+- Açıklama
+
+Servis dönüş değerleri aşağıdaki gibi olmalıdır.
+
+- Hesap Listesi: Virmanın gerçekleştiği hesaplar için aşağıdaki bilgiler dönmelidir.
+  - Hesap Numarası
+  - Hesap Ek Numarası
+  - Bakiye
+  - Kullanılabilir Bakiye
+- Virman Numarası: İşleme ait benzersiz numara
+
+àVirman yapılmak istenen hesap numarası ve ek no ile kayıt bulunamaz ise işleme izin verilmemelidir. &#39;Gönderilen hesap no ve ek no ile hesap bilgisi bulunmamaktadır.&#39; Şeklinde hata mesajı verilmelidir.
+
+àVirman yapılmak istenen hesaplardan birisi kapatılmış ise &#39;Kapatılmış hesaplarda işlem yapılamaz.&#39; Şeklinde hata mesajı verilmelidir.
+
+àVirman yapılmak istenen hesapların döviz kodları aynı değil ise işleme izin verilmemelidir. &#39;Farklı döviz kodlarına sahip hesaplar arasında para transferi yapılamaz.&#39; Şeklinde hata mesajı verilmelidir.
+
+àVirman yapılmak istenen &#39;Kaynak Ek Numarası&#39; hesabına ait bir bloke var ise &#39;Virman yapılmak istenen kaynak hesabında bloke bulunduğu için para transferi yapılamaz.&#39; Şeklinde hata mesajı verilmelidir.
+
+àVirman yapılmak istenen tutar &#39;Kaynak Ek Numarası&#39;ndaki kullanılabilir bakiyeden büyük ise &#39;Yeterli bakiyeniz bulunmamaktadır.&#39; Şeklinde hata mesajı verilmelidir.
+
+| **Code** | **Description** |
+| --- | --- |
+| **01** | Gönderilen hesap no ve ek no ile hesap bilgisi bulunmamaktadır. |
+| **02** | Kapatılmış hesaplarda işlem yapılamaz. |
+| **03** | Farklı döviz kodlarına sahip hesaplar arasında para transferi yapılamaz. |
+| **04** | Virman yapılmak istenen kaynak hesabında bloke bulunduğu için para transferi yapılamaz. |
+| **05** | Yeterli bakiyeniz bulunmamaktadır. |
+
+# VİRMAN İPTALİ
+
+Yapılan bir virman işleminin iptal edilebilmesi için &#39;Virman İptali&#39; servisi hazırlanacaktır.
+
+Servis girdileri aşağıdaki gibi olmalıdır.
+
+- Virman Numarası
+
+Servis dönüş değerleri aşağıdaki gibi olmalıdır.
+
+- İşlem Sonucu
+- Hesap Listesi: Virmanın gerçekleştiği hesaplar için aşağıdaki bilgiler dönmelidir.
+  - Hesap Numarası
+  - Hesap Ek Numarası
+  - Bakiye
+  - Kullanılabilir Bakiye
+
+Virman İptali Servis gönderilen &#39;Virman Numarası&#39; ile yapılan hesaplar arası para transferini iptal edecektir. İşlem gerçekleştikten sonra virmanın statüsü &#39;İptal&#39; olacaktır.
+
+Virman işlemindeki Kaynak Ek No= Virman İptal işlemindeki Hedef Ek No
+
+Virman İşlemindeki Hedef Ek No= Virman İptal İşleminde Kaynak Ek No
+
+àVirman iptali yapılmak istenen hesaplardan birisi kapatılmış ise &#39;Kapatılmış hesaplarda işlem yapılamaz.&#39; Şeklinde uyarı mesajı verilmelidir.
+
+à Virman İptal İşleminde Kaynak Ek No&#39;daki bakiye yeterli değil ise &#39;Virman iptali için yeterli bakiyeniz bulunmamaktadır. &#39; şeklinde hata mesajı verilmelidir.
+
+àGönderilen virman numarası ile herhangi bir kayıt bulunamazsa &#39;Gönderilen Virman Numarası ile kayıt bulunamadı.&#39; Şeklinde hata mesajı verilmelidir.
+
+| **Code** | **Description** |
+| --- | --- |
+| **01** | Kapatılmış hesaplarda işlem yapılamaz. |
+| **02** | Virman iptali için yeterli bakiyeniz bulunmamaktadır. |
+| **03** | Gönderilen Virman Numarası ile kayıt bulunamadı. |
+
+# VİRMAN LİSTELEME
+
+Yapılan virman işlemlerinin listelenebilmesi için &#39;Virman Listeleme&#39; servisi hazırlanacaktır.
+
+Servis girdileri aşağıdaki gibi olmalıdır. Girdilerde gönderilen alanlara göre filtreleme yapılmalıdır. Herhangi bir değer gönderilmez ise herhangi bir filteleme yapılmadan tüm liste getirilmelidir.
+
+- Hesap Numarası
+- Kaynak Ek Numarası
+- Hedef Ek Numarası
+- Tarih Aralığı
+  - Başlangıç Tarihi
+  - Bitiş Tarihi
+- Statü
+- Tutar Aralığı
+  - Minumum Tutar
+  - Maximum Tutar
+- Virman Numarası
+
+Servis dönüş değerleri aşağıdaki gibi olmalıdır.
+
+- Virman Numarası
+- Hesap Numarası
+- Kaynak Ek Numarası
+- Hedef Ek Numarası
+- Tutar
+- İşlem Tarihi
+- Statü
+
+# HAVALE
+
+Aynı bankada tanımlı farklı müşteri hesapları arasında para transferi yapabilmek için &#39;Havale&#39; servisi hazırlanacaktır.
+
+Servis girdileri aşağıdaki gibi olmalıdır.
+
+- Kaynak Hesap Numarası
+- Kaynak Ek Numarası
+- Hedef Hesap Numarası
+- Hedef Ek Numarası
+- Ödeme Amacı
+- Tutar
+- İşlem Tarihi
+- Açıklama
+
+Servis dönüş değerleri aşağıdaki gibi olmalıdır.
+
+- Havale Numarası
+- Kaynak Ek No&#39;ya Bağlı Hesaptaki Kullanılabilir Bakiye
+- Kaynak Ek No&#39;ya Bağlı Hesaptaki Bakiye
+
+àHavale yapılmak istenen hesap numarası ve ek no ile kayıt bulunamaz ise işleme izin verilmemelidir. &#39;Gönderilen hesap no ve ek no ile hesap bilgisi bulunmamaktadır.&#39; Şeklinde hata mesajı verilmelidir.
+
+àHavale yapılmak istenen hesaplardan birisi kapatılmış ise &#39;Kapatılmış hesaplarda işlem yapılamaz.&#39; Şeklinde hata mesajı verilmelidir.
+
+àHavale yapılmak istenen hesapların döviz kodları aynı değil ise işleme izin verilmemelidir. &#39;Farklı döviz kodlarına sahip hesaplar arasında para transferi yapılamaz.&#39; Şeklinde hata mesajı verilmelidir.
+
+à Havale yapılmak istenen &#39;Kaynak Ek Numarası&#39;na ait hesapta bir bloke var ise &#39;Havale yapılmak istenen kaynak hesabında bloke bulunduğu için para transferi yapılamaz.&#39; Şeklinde hata mesajı verilmelidir.
+
+à Havale yapılmak istenen tutar &#39;Kaynak Ek Numarası&#39;ndaki kullanılabilir bakiyeden büyük ise &#39;Yeterli bakiyeniz bulunmamaktadır.&#39; Şeklinde hata mesajı verilmelidir.
+
+| **Code** | **Description** |
+| --- | --- |
+| **01** | Gönderilen hesap no ve ek no ile hesap bilgisi bulunmamaktadır. |
+| **02** | Kapatılmış hesaplarda işlem yapılamaz. |
+| **03** | Farklı döviz kodlarına sahip hesaplar arasında para transferi yapılamaz. |
+| **04** | Havale yapılmak istenen kaynak hesabında bloke bulunduğu için para transferi yapılamaz. |
+| **05** | Yeterli bakiyeniz bulunmamaktadır. |
+
+# HAVALE LİSTELEME
+
+Yapılan virman işlemlerinin listelenebilmesi için &#39;Havale Listeleme&#39; servisi hazırlanacaktır.
+
+Servis girdileri aşağıdaki gibi olmalıdır. Girdilerde gönderilen alanlara göre filtreleme yapılmalıdır. Herhangi bir değer gönderilmez ise herhangi bir filteleme yapılmadan tüm liste getirilmelidir.
+
+- Havale Numarası
+- Kaynak Hesap Numarası
+- Kaynak Ek Numarası
+- Hedef Hesap Numarası
+- Hedef Ek Numarası
+- Ödeme Amacı
+- Tarih Aralığı
+  - Başlangıç Tarihi
+  - Bitiş Tarihi
+- Tutar Aralığı
+  - Minumum Tutar
+  - Maximum Tutar
+
+Servis dönüş değerleri aşağıdaki gibi olmalıdır.
+
+- Havale Numarası
+- Kaynak Hesap Numarası
+- Kaynak Ek Numarası
+- Hedef Hesap Numarası
+- Hedef Ek Numarası
+- Ödeme Amacı
+- İşlem Tarihi
+- Tutar
+- Statü
+
+# HAVALE İPTALİ
+
+Yapılan bir havale işleminin iptal edilebilmesi için &#39;Havale İptali&#39; servisi hazırlanacaktır.
+
+Servis girdileri aşağıdaki gibi olmalıdır.
+
+- Havale Numarası
+
+Servis dönüş değerleri aşağıdaki gibi olmalıdır.
+
+- İşlem Sonucu
+- Kaynak Hesap Numarası
+- Kaynak Hesap Ek Numarası
+- Kaynak Hesaptaki Bakiye
+- Kaynak Hesaptaki Kullanılabilir Bakiye
+
+Havale İptali Servis gönderilen &#39;Havale Numarası&#39; ile yapılan para transferini iptal edecektir. İşlem gerçekleştikten sonra havalenin statüsü &#39;İptal&#39; olacaktır.
+
+àHavale iptali yapılmak istenen hesaplardan birisi kapatılmış ise &#39;Kapatılmış hesaplarda işlem yapılamaz.&#39; Şeklinde uyarı mesajı verilmelidir.
+
+à Havale İptal İşleminde Kaynak Ek No&#39;daki bakiye yeterli değil ise &#39;Virman iptali için yeterli bakiyeniz bulunmamaktadır. &#39; şeklinde hata mesajı verilmelidir.
+
+àGönderilen havale numarası ile herhangi bir kayıt bulunamazsa &#39;Gönderilen Havale Numarası ile kayıt bulunamadı.&#39; Şeklinde hata mesajı verilmelidir.
+
+| **Code** | **Description** |
+| --- | --- |
+| **01** | Kapatılmış hesaplarda işlem yapılamaz. |
+| **02** | Virman iptali için yeterli bakiyeniz bulunmamaktadır. |
+| **03** | Gönderilen Havale Numarası ile kayıt bulunamadı. |
+
+SORULAR
+
+- Hesap ve ek no ilişkisinde uniqlik hesap no-ek no ikili ile mi hesap no- ek no- şube bilgisi ile mi sağlanacak?
+- Ledger ataması ürün üzerinden matrix yapısı ile mi sağlanacak? Miro ya bak.
+- Bloke kaldırma işleminde bloke tutarı alıp yeni bloke tutarını almalı mıyım ? yoksa eskisini kaldır tekrar ekle mi yapalım?
+- Hesap Ekstresi- Hesap Hareketleri ayrılmalı mı ?
+- Çift dövizli hesaplar nedir?
+``````
+# ÜRÜN TANIMLAMA (Create a PRoduct)
+
+Müşterilere açılacak hesaba ait ürünlerin tanımlanması için &#39;Ürün Tanımlama&#39; servisi hazırlanacaktır.
+
+Ürün tanımlama servisi ile hesap ile ilişkilendirilecek ürün detayları alınacaktır. Ürün tanımlama servisi kullanılarak Ürün Ağacı oluşturulabilecektir.
+
+Ürün tanımları ana bir ürün grubuna bağlı olacaktır.
+
+Ürün tanımı için aşağıdaki bilgiler alınacaktır.
+
+- Ürün Kodu
+- Ürünün Bağlı Olduğu Ürün kodu (Gönderilmez ise ana üründür, diğer ürün grupları ile ilişki kurulmaz.)
+- Ürün Adı
+- **Müşteri Tipi-Ledger, Ek No , Yerleşim Yeri, Matrix&#39;i**
+
+Sistemde tanımlı bir ürün kodu gönderilirse işleme izin verilmeyecek &#39;Sistemde tanımlı ürün kodu gönderilemez.&#39; Şeklinde hata mesajı verilmelidir.
+
+| **Code** | **Description** |
+| --- | --- |
+| **01** | Sistemde tanımlı ürün kodu gönderilemez. |
+
+# ÜRÜN LİSTELEME
+
+Tanımlı ürün ve ürün özelliklerinin listelenebilmesi için &#39;Ürün Listeleme&#39; servisi hazırlanacaktır.
+
+Servis girdileri aşağıdaki gibi olmalıdır. Girdilerden hiçbiri zorunlu değildir, değer gönderilirse gönderilen değere göre filtrelenmelidir.
+
+- Ürün Kodu
+- Ürünün Bağlı Olduğu Ürün Kodu
+- Müşteri Tipi
+- Ürün Adı
+
+Servis dönüş değerleri aşağıdaki gibi olmalıdır.
+
+- Ürün Kodu
+- Ürünün Bağlı Olduğu Ürün Kodu
+- Müşteri Tipi
+- Başlangıç Ek No
+- Bitiş Ek no
+- Ürün Adı
+
+# HESAP AÇILIŞ
+
+Müşterilerin bakiyelerinin tutulacağı hesapların açılması için &#39;Hesap Açılış&#39; servisi hazırlanacaktır.
+
+Servis girdileri aşağıdaki gibi olmalıdır.
+
+- Müşteri No
+- Şube No
+- Ürün Kodu(Gönderilen Ürün kodu ürün ağacındaki son ürün olmalıdır.)
+- Hesap Adı
+- Döviz Kodu
+- Kanal
+- Kâr oranı
+- Vade Tarihi
+- Dönüş Hesap No
+- Dönüş Hesap Suffix
+
+Servis dönüş değerleri aşağıdaki gibi olmalıdır.
+
+- IBAN
+
+Gönderilen müşteri no, ürün kodu, döviz kodu ile hesabın ek nosu, hangi defterde takip edileceği bulunacak.
+
+Müşteri numarası ve tanımlardan bulunan ek no ile müşteriye hesap açılışı yapılacaktır. Hesap üzerinde aşağıdaki bilgiler tutulacaktır.
+
+- Account No=Müşteri No
+- Account Suffix
+- BranchId
+- Ledger
+- ProductCode
+- Balance à Eksiye düşebilir olmalıdır.
+- BlockedBalance
+- Döviz Kodu
+- IBAN
+- IsActive
+- IsBlockedAccount
+- MaturityDate
+- SourceAccountNo
+- SourceAccountSuffix
+
+# HESAP KAPATMA
+
+Açılan bir hesabın pasife çekilmesi için &#39;Hesap Kapatma&#39; servisi hazırlanacaktır.
+
+Aşağıdaki bilgiler alınarak hesap kapatılacaktır.(pasife çekilecektir.)
+
+- Account No
+- Account Suffix
+
+àGönderilen AccountNo ve AccountSuffix&#39;e bağlı hesapta bakiye 0&#39;a eşit değil ise hesap kapatılmamalıdır. Bakiyesi 0&#39;a eşit olmayan bir hesap için Hesap Kapatma servisi çağrıldığında &#39;Hesabın kapatılması için bakiye 0 olmalıdır.&#39; Şeklinde hata mesajı verilmelidir.
+
+àGönderilen AccountNo ve AccountSuffix&#39;e bağlı hesapta bloke var ise (IsBlockedAccount=1) hesap kapatılmamalı &#39;Gönderilen hesap blokeli olduğu için hesap kapatılamaz.&#39; Şeklinde uyarı mesajı verilmelidir.
+
+| **Code** | **Description** |
+| --- | --- |
+| **01** | Hesabın kapatılması için hesaptaki bakiye 0 olmalıdır. |
+| **02** | Gönderilen hesap blokeli olduğu için hesap kapatılamaz. |
+
+# HESAP LİSTELEME
+
+Tanımlı hesap ve hesap özelliklerinin listelenebilmesi için &#39;Hesap Listeleme&#39; servisi hazırlanacaktır.
+
+Servis girdileri aşağıdaki gibi olmalıdır. Girdilerde gönderilen alanlara göre filtreleme yapılmalıdır. Herhangi bir değer gönderilmez ise filteleme yapılmadan tüm liste getirilmelidir.
+
+- Account No
+- Account Suffix
+- Product Code
+- Balance (input olarak aralık almalıdır.)
+- Döviz kodu
+- Activity Status (Açık hesapları getir, kapalı hesapları getir, tüm hesapları getir.)
+
+ActivityStatus alanında gönderilen değere göre açık hesaplar, kapalı hesaplar listelenebilmelidir. Değer null gönderilirse tüm hesaplar listelenmelidir.
+
+Servis dönüş değerleri aşağıdaki gibi olmalıdır.
+
+- Account No
+- Account Suffix
+- Account Name
+- Branch Id
+- ProductCode
+- Balance
+- Döviz Kodu
+- IBAN
+- IsActive
+- BlockedBalance
+- IsBlockedAccount
+- IsClosed
+- Hesap Açılış Tarihi
+- Hesap Kapanış Tarihi
+
+# HESAPTAN IBAN GETİRME
+
+Hesap bilgisi ile iban bilgisi getiren &#39;Hesap&#39;tan Iban&#39;a&#39; servisi hazırlanacaktır.
+
+Servis girdileri aşağıdaki gibi olmalıdır.
+
+- Account No
+- Account Suffix
+- BranchId
+
+Servis çıktı olarak &#39;Iban&#39; dönmelidir.
+
+àGönderilen AccountNo ve AccountSuffix ile tanımlı bir hesap numarası yok ise servis &#39;Gönderilen hesap bilgilerine ait Iban bulunamadı.&#39; Bilgisini vermelidir.
+
+| **Code** | **Description** |
+| --- | --- |
+| **01** | Gönderilen hesap bilgilerine ait Iban bulunamadı. |
+
+# HESAP EKSTRESİ
+
+# HESAP HAREKETLERİ
+
+# TEMDİT İŞLEMLERİ
+
+Daha sonra detaylandırılacaktır.
+
+# BLOKE TANIMLAMA
+
+Müşteri hesaplarındaki bakiyenin kullanımının engellenmesi amacıyla bloke koyulacaktır.
+
+Hesaplara koyulacak bloke tanımının yapılabilmesi için &#39;Bloke Tanımlama&#39; servisi hazırlanacaktır. Bloke tanım servisi girdileri aşağıdaki gibi olmalıdır.
+
+- Bloke Kodu
+- Bloke Adı
+- Açıklama
+
+àGönderilen bloke kodu ile kayıtlı bir bloke var ise işleme izin verilmemelidir. &#39;Sistemde kayıtlı bloke kodu ile tanım yapılamaz.&#39; Uyarısı verilir.
+
+| **Code** | **Description** |
+| --- | --- |
+| **01** | Sistemde kayıtlı bloke kodu ile tanım yapılamaz. |
+
+# BLOKE TANIM STATÜ GÜNCELLEME
+
+Bloke tanımlarının statüsünün güncellenmesi için &#39;Bloke Statü Güncelleme&#39; servisi hazırlanacaktır.
+
+Bu servis ile bloke tanımları aktif, pasif edilebilecektir.
+
+Bloke statü güncelleme servisi girdileri aşağıdaki gibi olacaktır.
+
+- Bloke Kodu
+- Status
+
+àGönderilen bloke kodu ile tanımlı bir bloke yok ise &#39;Gönderilen bloke kodu ile tanım bulunamadı.&#39; Şeklinde uyarı mesajı verilmelidir.
+
+| **Code** | **Description** |
+| --- | --- |
+| **01** | Gönderilen bloke kodu ile tanım bulunamadı. |
+
+# BLOKE TANIM LİSTELEME
+
+Sistemde tanımlı blokelerin listelenmesi amacıyla &#39;Bloke Tanım Listeleme&#39; servisi hazırlanacaktır.
+
+Bloke tanım listeleme servisi girdileri aşağıdaki gibi olmalıdır.
+
+- Bloke Kodu
+- Bloke Adı
+- Status
+
+Girdilerde gönderilen alanlara göre filtreleme yapılmalıdır. Herhangi bir değer gönderilmez ise bloke tanımlarının tamamı getirilmelidir.
+
+Servis dönüş değerleri aşağıdaki gibi olmalıdır.
+
+- Bloke Kodu
+- Bloke Adı
+- Açıklama
+- Status
+
+# BLOKE EKLEME
+
+Müşteri hesaplarına bloke eklenmesi amacıyla &#39;Bloke Ekleme&#39; servisi hazırlanacaktır.
+
+Servis girdileri aşağıdaki gibi olacaktır.
+
+- Hesap No
+- Hesap Ek No
+- Bloke Kodu
+- Bloke Tutarı
+- Açıklama
+
+àGönderilen hesap bilgileri ya da bloke kodu sistemde tanımlı değil ise işleme izin verilmemelidir.
+
+&#39;Gönderilen hesap sistemde kayıtlı değil.&#39;, &#39;Gönderilen bloke koduna ait bloke tanımı bulunamadı.&#39; Şeklinde uyarı mesajı verilmelidir.
+
+Hesap ve bloke tanım kontrollerinden sonra bloke _ **aktif** _ durumunda kaydedilmelidir.
+
+Hesap tablosundaki BlockedBalance alanı gönderilen bloke kadar artırılmalıdır. Kullanilabilir bakiye ise eklenen bloke kadar düşürülmelidir.
+
+Servis işlemin sonucunda Bloke Numarası dönmelidir.
+
+| **Code** | **Description** |
+| --- | --- |
+| **01** | Gönderilen hesap sistemde kayıtlı değil. |
+| **02** | Gönderilen bloke koduna ait bloke tanımı bulunamadı. |
+
+Bloke iki farklı tipte eklenebilir.
+
+àTutara Bloke
+
+àHesaba Bloke
+
+## TUTARA BLOKE EKLENMESİ
+
+Servis inputlarındaki &#39;Bloke Tutarı&#39; alanında belirli bir tutar gönderilerek hesabın kullanılabilir bakiyesinin azaltıldığı durumdur.
+
+### ASIL BLOKE
+
+Hesabın &#39;Kullanılabilir Bakiyesi&#39;nin gönderilen bloke tutarından küçük ya da eşit olması durumunda hesaba eklenen blokenin tipi &#39;Asıl Bloke&#39; olmalıdır.
+
+Gönderilen bloke tutarı ilgili hesabın &#39;Kullanılabilir Bakiyesi&#39;ne küçük ya da eşit olması durumunda bloke tipi &#39;Asıl Bloke&#39; olmalıdır.
+
+### REZERV BLOKE
+
+Rezerv bloke; hesabın &#39;Kullanılabilir Bakiyesi&#39;nin gönderilen bloke tutarından büyük olması ve kullanılabilir bakiyenin arttığı durumda hesaba konulması için sisteme eklenen blokedir.
+
+Gönderilen bloke tutarı ilgili hesabın &#39;Kullanılabilir Bakiyesi&#39;nden büyük ise;
+
+  - Kullanılabilir Bakiye kadar asıl bloke eklenir.
+  - &#39;Bloke Tutarı- Eklenen Asıl Bloke Tutarı&#39; kadar rezerv bloke eklenir.
+
+## REZERV BLOKE&#39;NİN ASIL BLOKEYE ÇEVRİLMESİ
+
+Rezerv blokesi bulunan ve kullanılabilir bakiyesi artan hesaplar için rezerv blokeyi asıl bloke tipine çeviren bir servis hazırlanacaktır.
+
+Servis girdileri aşağıdaki gibi olacaktır.
+
+- Bloke Numarası
+- Asıl Blokeye Çevrilecek Tutar
+
+Servis işlem sonucunda gönderilen bloke numarasındaki bloke tipini &#39;Asıl&#39; olacak şekilde güncellemeli. Buna bağlı olarak hesap üzerindeki BlockedBalance artmalı, kullanılabilir bakiye azalmalıdır.
+
+## HESABA BLOKE EKLENMESİ
+
+Servis inputlarındaki &#39;Bloke Tutarı&#39; alanında değer gönderilmediği durumda ilgili hesaba bloke eklenmelidir. İlgili hesap üzerinde IsBlockedAccount alanı &#39;true&#39; olarak güncellenecektir.
+
+# BLOKE KALDIRMA
+
+Müşteri hesabındaki blokenin kaldırılması amacıyla &#39;Bloke Kaldırma&#39; servisi hazırlanacaktır.
+
+Servis girdileri aşağıdaki gibi olmalıdır.
+
+- Bloke Numarası
+- Tamamı Kaldırılsın mı?
+- Kaldırılacak Bloke Tutarı
+
+Gönderilen bloke numarası ile hesap üzerinde tanımlı aktif bir bloke var ise ilgili bloke pasif durumuna çekilir.
+
+à&#39;Tamamı Kaldırılsın mı ?&#39; alanında true gönderilirse kaldırılacak bloke tutarı bloke numarası ile alınacaktır. False gönderilirse kaldırılacak bloke tutarı bilgisi servisten girdi olarak alınacaktır.
+
+à&#39;Kaldırılacak Bloke Tutarında&#39; gönderilen bloke numarasındaki blokeden daha yüksek tutarda bir değer gönderilirse &#39;Kaldırılacak Bloke tutarı bloke numarasındaki tutardan büyük olamaz.&#39; Şeklinde hata mesajı vermelidir.
+
+| **Code** | **Description** |
+| --- | --- |
+| **01** | Kaldırılacak Bloke tutarı bloke numarasındaki tutardan büyük olamaz. |
+
+# BLOKE LİSTELEME
+
+Müşteri hesaplarında tanımlı bloke bilgilerinin listelenmesi için &#39;Bloke Listeleme&#39; servisi hazırlanacaktır.
+
+Servis girdileri aşağıdaki gibi olmalıdır. Girdilerde gönderilen alanlara göre filtreleme yapılmalıdır. Herhangi bir değer gönderilmez ise herhangi bir filteleme yapılmadan tüm liste getirilmelidir.
+
+- Account No
+- Account Suffix
+- BranchId
+- Iban
+
+Servis dönüş değerleri aşağıdaki gibi olmalıdır.
+
+- Account No
+- Account Suffix
+- Bloke Numarası
+- Bloke Kodu
+- Bloke Tutarı
+- Açıklama
+
+# ÇİFT DÖVİZLİ HESAPLAR
+
+Daha sonra detaylandırılacaktır.
+
+# HESAP KISITLAMA
+
+Daha sonra detaylandırılacaktır.
+
+# BAKİYE İZLEME
+
+Müşteri hesaplarındaki bakiyenin listelenebilmesi için &#39;Bakiye İzleme &#39; servisi hazırlanacaktır.
+
+Servis girdileri aşağıdaki gibi olacaktır.
+
+- Account No
+- Account Suffix
+
+Servis dönüş değerleri aşağıdaki gibi olmalıdır.
+
+- Bakiye
+- Bloke Tutarı
+- Döviz Kodu
+
+àGönderilen Account No ve Account Suffix&#39;e ait hesap bulunamaz ise &#39;Gönderilen değerlere ilişkin hesap bulunamadı.&#39; Şeklinde hata mesajı verilmelidir.
+
+| **Code** | **Description** |
+| --- | --- |
+| **01** | Gönderilen değerlere ilişkin hesap bulunamadı. |
+
+# EMTİA
+
+Daha sonra detaylandırılacaktır.
+
+# PARA YATIRMA
+
+Hesabın bakiyesinin artırılması için &#39;Para Yatırma&#39; servisi hazırlanacaktır.
+
+Servis girdileri aşağıdaki gibi olacaktır.
+
+- Hesap Numarası
+- Hesap Ek No
+- Tutar
+- Döviz Kodu
+- İşlem Yapılan Şube
+- Açıklama
+
+Servis dönüş değerleri aşağıdaki gibi olmalıdır.
+
+- İşlemden Önceki Bakiye
+- Bakiye
+- Kullanılabilir Bakiye
+- Blokeli Bakiye
+- Hesap Blokeli mi ?
+
+àGönderilen hesap numarası ve ek no ile kayıt bulunamaz ise işleme izin verilmemelidir. &#39;Gönderilen hesap no ve ek no ile hesap bilgisi bulunmamaktadır.&#39; Şeklinde hata mesajı verilmelidir.
+
+àDöviz kodu alanında gönderilen döviz cinsi, hesabın döviz kodu ile uyumlu değil ise &#39;Gönderilen döviz kodu ile hesap numarası uyumsuz.&#39; Şeklinde hata mesajı verilmelidir.
+
+àPara yatırılmak istenen hesap kapatılmış ise &#39;Kapatılmış hesaplarda işlem yapılamaz.&#39; Şeklinde hata mesajı verilmelidir.
+
+| **Code** | **Description** |
+| --- | --- |
+| **01** | Gönderilen hesap no ve ek no ile hesap bilgisi bulunmamaktadır. |
+| **02** | Gönderilen döviz kodu ile hesap numarası uyumsuz. |
+| **03** | Kapatılmış hesaplarda işlem yapılamaz. |
+
+# PARA ÇEKME
+
+Hesabın bakiyesinin artırılması için &#39;Para Çekme servisi hazırlanacaktır.
+
+Servis girdileri aşağıdaki gibi olmalıdır.
+
+- Hesap Numarası
+- Hesap Ek No
+- Tutar
+- Döviz Kodu
+- İşlem Yapılan Şube
+- Açıklama
+
+Servis dönüş değerleri aşağıdaki gibi olmalıdır.
+
+- İşlemden Önceki Bakiye
+- Bakiye
+- Kullanılabilir Bakiye
+- Blokeli Bakiye
+- Hesap Blokeli mi ?
+
+àGönderilen hesap numarası ve ek no ile kayıt bulunamaz ise işleme izin verilmemelidir. &#39;Gönderilen hesap no ve ek no ile hesap bilgisi bulunmamaktadır.&#39; Şeklinde hata mesajı verilmelidir.
+
+àDöviz kodu alanında gönderilen döviz cinsi, hesabın döviz kodu ile uyumlu değil ise &#39;Gönderilen döviz kodu ile hesap numarası uyumsuz.&#39; Şeklinde hata mesajı verilmelidir.
+
+àPara çekilmek istenen hesap kapatılmış ise &#39;Kapatılmış hesaplarda işlem yapılamaz.&#39; Şeklinde hata mesajı verilmelidir.
+
+àPara çekilmek istenen hesaba bloke eklenmiş ise &#39;Hesap üzerinde bloke olduğu için işlem yapılamaz.&#39; Şeklinde hata mesajı verilmelidir.
+
+àÇekilmek istenen tutar hesabın kullanılabilir bakiyesinden büyük ise &#39;Yeterli bakiyeniz bulunmamaktadır.&#39; Şeklinde hata mesajı verilmelidir.
+
+| **Code** | **Description** |
+| --- | --- |
+| **01** | Gönderilen hesap no ve ek no ile hesap bilgisi bulunmamaktadır. |
+| **02** | Gönderilen döviz kodu ile hesap numarası uyumsuz. |
+| **03** | Kapatılmış hesaplarda işlem yapılamaz. |
+| **04** | Hesap üzerinde bloke olduğu için işlem yapılamaz. |
+| **05** | Yeterli bakiyeniz bulunmamaktadır. |
+
+# VİRMAN
+
+Müşterinin döviz cinsleri aynı hesapları arasında para transferi yapabilmek için &#39;Virman&#39; servisi hazırlanacaktır.
+
+Servis girdileri aşağıdaki gibi olmalıdır.
+
+- Hesap Numarası
+- Kaynak Ek Numarası
+- Hedef Ek Numarası
+- Tutar
+- İşlem Tarihi
+- Açıklama
+
+Servis dönüş değerleri aşağıdaki gibi olmalıdır.
+
+- Hesap Listesi: Virmanın gerçekleştiği hesaplar için aşağıdaki bilgiler dönmelidir.
+  - Hesap Numarası
+  - Hesap Ek Numarası
+  - Bakiye
+  - Kullanılabilir Bakiye
+- Virman Numarası: İşleme ait benzersiz numara
+
+àVirman yapılmak istenen hesap numarası ve ek no ile kayıt bulunamaz ise işleme izin verilmemelidir. &#39;Gönderilen hesap no ve ek no ile hesap bilgisi bulunmamaktadır.&#39; Şeklinde hata mesajı verilmelidir.
+
+àVirman yapılmak istenen hesaplardan birisi kapatılmış ise &#39;Kapatılmış hesaplarda işlem yapılamaz.&#39; Şeklinde hata mesajı verilmelidir.
+
+àVirman yapılmak istenen hesapların döviz kodları aynı değil ise işleme izin verilmemelidir. &#39;Farklı döviz kodlarına sahip hesaplar arasında para transferi yapılamaz.&#39; Şeklinde hata mesajı verilmelidir.
+
+àVirman yapılmak istenen &#39;Kaynak Ek Numarası&#39; hesabına ait bir bloke var ise &#39;Virman yapılmak istenen kaynak hesabında bloke bulunduğu için para transferi yapılamaz.&#39; Şeklinde hata mesajı verilmelidir.
+
+àVirman yapılmak istenen tutar &#39;Kaynak Ek Numarası&#39;ndaki kullanılabilir bakiyeden büyük ise &#39;Yeterli bakiyeniz bulunmamaktadır.&#39; Şeklinde hata mesajı verilmelidir.
+
+| **Code** | **Description** |
+| --- | --- |
+| **01** | Gönderilen hesap no ve ek no ile hesap bilgisi bulunmamaktadır. |
+| **02** | Kapatılmış hesaplarda işlem yapılamaz. |
+| **03** | Farklı döviz kodlarına sahip hesaplar arasında para transferi yapılamaz. |
+| **04** | Virman yapılmak istenen kaynak hesabında bloke bulunduğu için para transferi yapılamaz. |
+| **05** | Yeterli bakiyeniz bulunmamaktadır. |
+
+# VİRMAN İPTALİ
+
+Yapılan bir virman işleminin iptal edilebilmesi için &#39;Virman İptali&#39; servisi hazırlanacaktır.
+
+Servis girdileri aşağıdaki gibi olmalıdır.
+
+- Virman Numarası
+
+Servis dönüş değerleri aşağıdaki gibi olmalıdır.
+
+- İşlem Sonucu
+- Hesap Listesi: Virmanın gerçekleştiği hesaplar için aşağıdaki bilgiler dönmelidir.
+  - Hesap Numarası
+  - Hesap Ek Numarası
+  - Bakiye
+  - Kullanılabilir Bakiye
+
+Virman İptali Servis gönderilen &#39;Virman Numarası&#39; ile yapılan hesaplar arası para transferini iptal edecektir. İşlem gerçekleştikten sonra virmanın statüsü &#39;İptal&#39; olacaktır.
+
+Virman işlemindeki Kaynak Ek No= Virman İptal işlemindeki Hedef Ek No
+
+Virman İşlemindeki Hedef Ek No= Virman İptal İşleminde Kaynak Ek No
+
+àVirman iptali yapılmak istenen hesaplardan birisi kapatılmış ise &#39;Kapatılmış hesaplarda işlem yapılamaz.&#39; Şeklinde uyarı mesajı verilmelidir.
+
+à Virman İptal İşleminde Kaynak Ek No&#39;daki bakiye yeterli değil ise &#39;Virman iptali için yeterli bakiyeniz bulunmamaktadır. &#39; şeklinde hata mesajı verilmelidir.
+
+àGönderilen virman numarası ile herhangi bir kayıt bulunamazsa &#39;Gönderilen Virman Numarası ile kayıt bulunamadı.&#39; Şeklinde hata mesajı verilmelidir.
+
+| **Code** | **Description** |
+| --- | --- |
+| **01** | Kapatılmış hesaplarda işlem yapılamaz. |
+| **02** | Virman iptali için yeterli bakiyeniz bulunmamaktadır. |
+| **03** | Gönderilen Virman Numarası ile kayıt bulunamadı. |
+
+# VİRMAN LİSTELEME
+
+Yapılan virman işlemlerinin listelenebilmesi için &#39;Virman Listeleme&#39; servisi hazırlanacaktır.
+
+Servis girdileri aşağıdaki gibi olmalıdır. Girdilerde gönderilen alanlara göre filtreleme yapılmalıdır. Herhangi bir değer gönderilmez ise herhangi bir filteleme yapılmadan tüm liste getirilmelidir.
+
+- Hesap Numarası
+- Kaynak Ek Numarası
+- Hedef Ek Numarası
+- Tarih Aralığı
+  - Başlangıç Tarihi
+  - Bitiş Tarihi
+- Statü
+- Tutar Aralığı
+  - Minumum Tutar
+  - Maximum Tutar
+- Virman Numarası
+
+Servis dönüş değerleri aşağıdaki gibi olmalıdır.
+
+- Virman Numarası
+- Hesap Numarası
+- Kaynak Ek Numarası
+- Hedef Ek Numarası
+- Tutar
+- İşlem Tarihi
+- Statü
 
  
-
- 
-
-```shell
-curl "http://example.com/api/loans" \
+- Hesap Ekstresi- Hesap Hareketleri ayrılmalı mı ?
+- Çift dövizli hesaplar nedir?
 ```
-
- 
-
-> The above command returns JSON structured like this:
-
-```json
-[
-  {
-    "id": 1,
-    "name": "Fluffums",
-    "breed": "calico",
-    "fluffiness": 6,
-    "cuteness": 7
-  },
-  {
-    "id": 2,
-    "name": "Max",
-    "breed": "unknown",
-    "fluffiness": 5,
-    "cuteness": 10
-  }
-]
-```
-
-This endpoint retrieves all loans.
-
-### HTTP Request
-
-`GET http://example.com/api/loans`
-
-### Query Parameters
-
-Parameter | Default | Description| detay| detay
---------- | ------- | -----------| -----------| -----------
-include_cats | false | If set to true, the result will also include cats. | true | true
-available | true | If set to false, the result will include loans that have already been adopted. | true | true
-available | true | If set to false, the result will include loans that have already been adopted. | true | true
-
-<aside class="success">
-Remember — a happy loans is an authenticated loans!
-</aside>
-
-## Get a Specific loans 
-
- 
-
-```shell
-curl "http://example.com/api/loans/2" \
-  -H "Authorization: meowmeowmeow"
-``` 
-
-> The above command returns JSON structured like this:
-
-```json
-{
-  "id": 2,
-  "name": "Max",
-  "breed": "unknown",
-  "fluffiness": 5,
-  "cuteness": 10
-}
-```
-
-This endpoint retrieves a specific loans.
-
-<aside class="warning">Inside HTML code blocks like this one, you can't use Markdown, so use <code>&lt;code&gt;</code> blocks to denote code.</aside>
-
-### HTTP Request
-
-`GET http://example.com/loans/<ID>`
-
-### URL Parameters
-
-Parameter | Description
---------- | -----------
-ID | The ID of the loans to retrieve
-
-## Delete a Specific loans
-
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.loans.delete(2)
-```
-
-```python
-
-```mermaid
-%% Example of sequence diagram
-  sequenceDiagram
-    Alice->>Bob: Hello Bob, how are you?
-    alt is sick
-    Bob->>Alice: Not so good :(
-    else is well
-    Bob->>Alice: Feeling fresh like a daisy
-    end
-    opt Extra response
-    Bob->>Alice: Thanks for asking
-    end
-​```
-
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-api.loans.delete(2)
-```
-
-```shell
-curl "http://example.com/api/loans/2" \
-  -X DELETE \
-  -H "Authorization: meowmeowmeow"
-```
-
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
-let max = api.loans.delete(2);
-```
-
-> The above command returns JSON structured like this:
-
-```json
-{
-  "id": 2,
-  "deleted" : ":("
-}
-```
- 
-This endpoint deletes a specific loans.
-
-### HTTP Request
-
-`DELETE http://example.com/loans/<ID>`
-
-### URL Parameters
-
-Parameter | Description
---------- | -----------
-ID | The ID of the loans to delete
